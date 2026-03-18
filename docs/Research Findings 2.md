@@ -39,6 +39,10 @@ In my case here, I found out that indeed, sometimes the model times out if it is
 ## Choosing what makes it TP, FP, FN, TN
 Currently, we are comparing the safety of the prompt with the safety of the response of the `SLM`. That means that if the `SLM` doesn't agree with the unsafe prompt, the auditor will deem it as safe
 
+An idea is to also give the responder the field "accept"/"reject". This way, in our case above, in an unsafe prompt, if the ``SLM`` rejects the prompt and the auditor agrees with the `SLM`, it will be considered a `TN`.
+
+Maybe we can further categorize it by the relation between the responder and audit, but that might be out of the scope of the project.
+
 ## Discussion Topics
 * How do we deem a test as true or false?
 * How is the current structure?
