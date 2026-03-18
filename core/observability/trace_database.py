@@ -8,6 +8,7 @@ class TraceDatabase:
     #constructor
     def __init__(self, db_rel_path: str = "bench/traces.db"):
         self.db_path = Path(__file__).resolve().parents[2] / db_rel_path
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._initialize_db()
 
 
@@ -39,7 +40,7 @@ class TraceDatabase:
             conn.commit()
 
 
-    #add element
+    #add an element
     def save_trace(self, trace: Trace):
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
