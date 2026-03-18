@@ -126,7 +126,7 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
             print(f"\nSAFE. Finishing trace.")
             trace.status = "SUCCESS"
             trace.execution_data = execution_data
-            return gen_data
+            return gen_data, trace
 
         else:
             print(f"\nUNSAFE. Attempting rewrite...")
@@ -155,21 +155,21 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
                     """
             ))
             print(f"[Trace {trace.trace_id[:8]}] completed with rewrite.")
-            return fixed_data
+            return fixed_data, trace
 
     #timeout error
     except (ReadTimeout, ollama.ResponseError) as e:
         trace.status = "TIMEOUT"
         trace.error_report = f"Model took > 30s to respond: {str(e)}"
         print(f"TIMEOUT in Trace {trace.trace_id[:8]}: Model is looping.")
-        return None
+        return None, trace
 
     #error with following the trace
     except Exception as e:
         trace.status = "FAILED"
         trace.error_report = str(e)
         print(f"\nFAILURE in Trace {trace.trace_id[:8]}: {e}")
-        return None
+        return None, trace
 
     finally:
         end_time = time.perf_counter()
