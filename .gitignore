@@ -8,6 +8,7 @@ __pycache__/
 
 # databases
 traces.db
+runs.db
 
 # Distribution / packaging
 .Python
