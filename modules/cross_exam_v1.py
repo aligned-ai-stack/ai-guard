@@ -3,6 +3,8 @@ import os
 import time
 
 import ollama
+from httpx import ReadTimeout
+
 from core.contracts.schemas import ResponseSchema, AuditSchema
 from core.contracts.trace import Trace
 
@@ -10,6 +12,9 @@ from core.contracts.trace import Trace
 def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
 
     start_time = time.perf_counter()
+
+    #client/ convo initialization
+    client = ollama.Client(timeout=45.0)
 
     #load the models
     res_model = os.getenv("RESPONSE_MODEL", "llama3.1:8b")
@@ -28,7 +33,7 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
     )
     print(f"MODELS INSERTED:"
           f"\nGENERATION MODEL: {res_model}"
-          f"\nAUDITOR MODEL: {audit_model}\n")
+          f"\nAUDITOR MODEL: {audit_model}")
 
     #prompts
     response_instructions = (
@@ -56,8 +61,8 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
 
     try:
         # --- 1. GENERATE ---
-        print(f"[TRACE {trace.trace_id[:8]}] Generating initial response...")
-        response = ollama.chat(
+        print(f"\n[TRACE {trace.trace_id[:8]}] Generating initial response...")
+        response = client.chat(
             model=res_model,
             messages=[
                 {'role': 'system', 'content': response_instructions},
@@ -86,8 +91,8 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
         ))
 
         # --- 2. AUDIT ---
-        print(f"[TRACE {trace.trace_id[:8]}] Auditing response...")
-        audit = ollama.chat(
+        print(f"\n[TRACE {trace.trace_id[:8]}] Auditing response...")
+        audit = client.chat(
             model=audit_model,
             messages=[
                 {'role': 'system', 'content': audit_instructions},
@@ -118,14 +123,14 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
         ))
 
         if safety == "safe":
-            print(f"SAFE. Finishing trace.")
+            print(f"\nSAFE. Finishing trace.")
             trace.status = "SUCCESS"
             trace.execution_data = execution_data
             return gen_data
 
         else:
-            print(f"UNSAFE. Attempting rewrite...")
-            fix = ollama.chat(
+            print(f"\nUNSAFE. Attempting rewrite...")
+            fix = client.chat(
                 model=res_model,
                 messages=[
                     {'role': 'system', 'content': fix_instructions},
@@ -146,20 +151,28 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
                 f"""
                 ---RESPONSE FIXED---
                 thought_process : {fixed_data.thought_process}
-                output_content : {fixed_data.output_content}\n
+                output_content : {fixed_data.output_content}
                     """
             ))
             print(f"[Trace {trace.trace_id[:8]}] completed with rewrite.")
             return fixed_data
 
+    #timeout error
+    except (ReadTimeout, ollama.ResponseError) as e:
+        trace.status = "TIMEOUT"
+        trace.error_report = f"Model took > 30s to respond: {str(e)}"
+        print(f"TIMEOUT in Trace {trace.trace_id[:8]}: Model is looping.")
+        return None
+
+    #error with following the trace
     except Exception as e:
         trace.status = "FAILED"
         trace.error_report = str(e)
-        print(f"FAILURE in Trace {trace.trace_id[:8]}: {e}")
-        raise e
+        print(f"\nFAILURE in Trace {trace.trace_id[:8]}: {e}")
+        return None
 
     finally:
         end_time = time.perf_counter()
         trace.total_duration_ms = (end_time - start_time) * 1000
 
-        print(f"[*] Trace Summary: {trace.total_duration_ms:.2f}ms | {trace.total_tokens} tokens.")
+        print(f"\nTrace Summary: {trace.total_duration_ms:.2f}ms | {trace.total_tokens} tokens.")
