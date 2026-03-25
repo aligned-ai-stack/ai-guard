@@ -5,6 +5,7 @@ from typing import Optional, Literal
 class ResponseSchema(BaseModel):
     thought_process: str = Field(description="The chain of thought...")
     output_content: str = Field(description="The actual response...")
+    agreement: Literal["safe", "unsafe"] = Field(description="Agreement between the user and the LLM.")
 
 # audit model schema
 class AuditSchema(BaseModel):

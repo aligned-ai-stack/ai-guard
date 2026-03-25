@@ -16,8 +16,9 @@ class RunsDatabase:
                 CREATE TABLE IF NOT EXISTS runs (
                     run_id TEXT PRIMARY KEY,
                     timestamp TEXT,
-                    test_set TEXT,
-                    framework_version TEXT,
+                    test_type TEXT,
+                    test_name TEXT,
+                    framework TEXT,
                     gen_model TEXT,
                     audit_model TEXT,
                     system_prompts TEXT,
@@ -35,13 +36,13 @@ class RunsDatabase:
             """)
             conn.commit()
 
-    def start_run(self, run_id, test_set, framework, gen_model, audit_model, system_prompts):
+    def start_run(self, run_id, test_type, test_name, framework, gen_model, audit_model):
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO runs (run_id, timestamp, test_set, framework_version, gen_model, audit_model, system_prompts)
+                INSERT INTO runs (run_id, timestamp, test_type, test_name, framework, gen_model, audit_model)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (run_id, datetime.now().isoformat(), test_set, framework, gen_model, audit_model, json.dumps(system_prompts)))
+            """, (run_id, datetime.now().isoformat(), test_type, test_name, framework, gen_model, audit_model))
             conn.commit()
 
     def finalize_run(self, run_id, stats: dict):
