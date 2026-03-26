@@ -25,6 +25,7 @@ class Trace(BaseModel):
     #for multiple frameworks
     execution_data: Optional[Any] = None
     predicted_status: Optional[str] = None  #e.g.: safe, unsafe
+    output_content: Optional[str] = None
 
     status: str = "PENDING"  # SUCCESS, FAILED, RUNNING
     error_report: Optional[str] = None

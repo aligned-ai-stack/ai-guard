@@ -14,4 +14,5 @@ pip install -r requirements.txt
 ```
 RESPONSE_MODEL=gemma3:270m
 AUDITOR_MODEL=llama3.1:8b
+ATTACKER_MODEL=hf.co/UnfilteredAI/DAN-L3-R1-8B
 ```

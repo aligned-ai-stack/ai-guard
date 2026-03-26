@@ -31,9 +31,6 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
         audit_model=audit_model,
         status="RUNNING"
     )
-    print(f"MODELS INSERTED:"
-          f"\nGENERATION MODEL: {res_model}"
-          f"\nAUDITOR MODEL: {audit_model}")
 
     #prompts
     response_instructions = (
@@ -125,6 +122,7 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
         if safety == "safe":
             print(f"\nSAFE. Finishing trace.")
             trace.status = "SUCCESS"
+            trace.output_content = gen_data.output_content
             trace.execution_data = execution_data
             return gen_data, trace
 
@@ -147,6 +145,7 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
 
             trace.status = "SUCCESS"
             trace.execution_data = execution_data
+            trace.output_content = fixed_data.output_content
             print(inspect.cleandoc(
                 f"""
                 ---RESPONSE FIXED---

@@ -30,6 +30,7 @@ class TraceDatabase:
                     audit_model TEXT,
                     execution_data TEXT,
                     predicted_status TEXT,
+                    output_content TEXT,
                     status TEXT,
                     error_report TEXT,
                     total_duration_ms REAL,
@@ -45,12 +46,12 @@ class TraceDatabase:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 
-            placeholders = ", ".join(["?"] * 16)
+            placeholders = ", ".join(["?"] * 17)
             sql_query = f"""
                 INSERT INTO traces (
                     trace_id, run_id, timestamp, input_query, expected_status,
                     input_tokens, framework_version, gen_model, audit_model,
-                    execution_data, predicted_status, status, error_report,
+                    execution_data, predicted_status, output_content, status, error_report,
                     total_duration_ms, total_tokens, tags
                 ) VALUES ({placeholders})
             """
@@ -66,6 +67,7 @@ class TraceDatabase:
                 trace.audit_model,
                 json.dumps(trace.execution_data),
                 trace.predicted_status,
+                trace.output_content,
                 trace.status,
                 trace.error_report,
                 trace.total_duration_ms,
