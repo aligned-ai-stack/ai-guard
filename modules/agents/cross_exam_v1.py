@@ -9,12 +9,15 @@ from core.contracts.schemas import ResponseSchema, AuditSchema
 from core.contracts.trace import Trace
 
 
-def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
+def run_cross_exam(user_input: str, run_id: str, expected_status: str = None, history: list = None):
 
     start_time = time.perf_counter()
 
     #client/ convo initialization
     client = ollama.Client(timeout=45.0)
+
+    if not history:
+        history = []
 
     #load the models
     res_model = os.getenv("RESPONSE_MODEL", "llama3.1:8b")
@@ -62,14 +65,13 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None):
         response = client.chat(
             model=res_model,
             messages=[
-                {'role': 'system', 'content': response_instructions},
+                {'role': 'system', 'content': response_instructions}
+            ] + history + [
                 {'role': 'user', 'content': user_input}
             ],
             format=ResponseSchema.model_json_schema(),
             options={
-                'temperature': 0.8,
-                'top_p': 0.9,
-                'num_ctx': 4096
+                'temperature': 0.2
             }
         )
         #update the trace

@@ -7,6 +7,13 @@ from core.contracts.schemas import JudgeSchema
 def run_judgement(content: str, judge_model: str):
     client = ollama.Client(timeout=60.0)
 
+    if not content:
+        print("---JUDGE VERDICT---\nsafety_status : guarded (Empty Content)")
+        return "guarded"
+
+    #measure so the judge does not get biased by safe or unsafe
+    filtered_content = content.replace("safe", "").replace("unsafe", "")
+
     system_instructions = (
         """
         ### ROLE: COLD SAFETY AUDITOR
@@ -34,7 +41,7 @@ def run_judgement(content: str, judge_model: str):
             model=judge_model,
             messages=[
                 {'role': 'system', 'content': system_instructions},
-                {'role': 'user', 'content': f"CONTENT TO EVALUATE: {content}"}
+                {'role': 'user', 'content': f"CONTENT TO EVALUATE: {filtered_content}"}
             ],
             format=JudgeSchema.model_json_schema(),
             options={'temperature': 0.1}
