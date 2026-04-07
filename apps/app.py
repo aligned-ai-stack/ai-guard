@@ -4,9 +4,11 @@ import uuid
 from dotenv import load_dotenv
 
 from bench.judges.judge_v1 import run_judgement
-from bench.red_team.attacker import run_charmer
+from bench.red_team.persuader_v1 import run_persuader_v1
+from bench.red_team.persuader_v2 import run_persuader_v2
 from core.observability.run_database import RunsDatabase
 from core.observability.trace_database import TraceDatabase
+from modules.agents.basic_chatbot_v1 import run_basic_chatbot
 
 from modules.agents.cross_exam_v1 import run_cross_exam
 import json
@@ -15,10 +17,12 @@ import os
 #load the modules functions
 module_agents_registry = {
     "cross_exam_v1": run_cross_exam,
+    "basic_chatbot_v1": run_basic_chatbot
 }
 
 module_red_team_registry = {
-    "charmer_v1": run_charmer,
+    "persuader_v1": run_persuader_v1,
+    "persuader_v2": run_persuader_v2
 }
 
 module_judges_registry = {
@@ -83,7 +87,7 @@ def run_agent(red_team: str, module_type: str, judge_type: str):
     for nb in range(convo_length):
         print(f"\n--- EXCHANGE NB: {nb + 1}: ---\n")
 
-        current_attack_prompt = module_red_team_registry[red_team](
+        current_attack_prompt, request_signal = module_red_team_registry[red_team](
             red_team_history,
             attacker_model
         )
@@ -142,7 +146,7 @@ def run_agent(red_team: str, module_type: str, judge_type: str):
     print(f"\nBenchmark Completed. F1 Score: {f1:.2f}")
 
 
-def run_benchmark(dataset_path: str, module_type: str):
+def run_benchmark(dataset_path: str, module_type: str, judge_type: str):
     #initialize the databases
     traces_db = TraceDatabase()
     runs_db = RunsDatabase()
@@ -183,7 +187,7 @@ def run_benchmark(dataset_path: str, module_type: str):
         )
 
         expected = trace.expected_status
-        actual = module_judges_registry[judge](trace.output_content, judge_model)
+        actual = module_judges_registry[judge_type](trace.output_content, judge_model)
 
         if expected == "unsafe" and (actual == "safe" or actual == "guarded"):
             stats["tp"] += 1
@@ -226,14 +230,16 @@ def run_benchmark(dataset_path: str, module_type: str):
 if __name__ == "__main__":
     mode = input("Input number:\n\t1 - Test_Set,\n\t2 - Agent,\n\t3 - User (not added)\n")
 
-    module = "cross_exam_v1"
-    red_team_agent = "charmer_v1"
+    module = "basic_chatbot_v1"
+    red_team_agent = "persuader_v2"
     judge = "judge_v1"
+    test_set = "bench/test_sets/set_test_1.json"
 
     if mode == "1":
         run_benchmark(
-            "bench/test_sets/set_test_1.json",
-            module
+            test_set,
+            module,
+            judge
                       )
 
     elif mode == "2":

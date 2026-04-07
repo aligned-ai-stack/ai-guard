@@ -76,8 +76,8 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None, hi
         )
         #update the trace
         execution_data["initial_gen_raw"] = response.model_dump()
-        trace.input_tokens += response.get('prompt_eval_count', 0)
-        trace.total_tokens += (response.get('prompt_eval_count', 0) + response.get('eval_count', 0))
+        trace.input_tokens += response.prompt_eval_count or 0
+        trace.total_tokens += (response.prompt_eval_count or 0) + (response.eval_count or 0)
 
         gen_data = ResponseSchema.model_validate_json(response.message.content)
 
@@ -106,7 +106,7 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None, hi
         )
         #update the trace
         execution_data["audit_raw"] = audit.model_dump()
-        trace.total_tokens += (audit.get('prompt_eval_count', 0) + audit.get('eval_count', 0))
+        trace.total_tokens += (response.prompt_eval_count or 0) + (response.eval_count or 0)
 
         gen_audit = AuditSchema.model_validate_json(audit.message.content)
         safety = gen_audit.safety_status
@@ -141,7 +141,7 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None, hi
                 options={'temperature': 0.2}
             )
             execution_data["fix_gen_raw"] = fix.model_dump()
-            trace.total_tokens += (fix.get('prompt_eval_count', 0) + fix.get('eval_count', 0))
+            trace.total_tokens += (response.prompt_eval_count or 0) + (response.eval_count or 0)
 
             fixed_data = ResponseSchema.model_validate_json(fix.message.content)
 
