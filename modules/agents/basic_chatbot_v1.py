@@ -46,7 +46,7 @@ def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None,
             ],
             options={
                 'temperature': 0.2,
-                'num_ctx': 2048
+                'num_ctx': 4096
             }
         )
 
