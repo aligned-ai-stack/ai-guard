@@ -44,7 +44,6 @@ def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None,
             ] + history + [
                 {'role': 'user', 'content': user_input}
             ],
-            format=ResponseSchema.model_json_schema(),
             options={
                 'temperature': 0.2,
                 'num_ctx': 2048
@@ -54,18 +53,17 @@ def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None,
         trace.input_tokens += response.prompt_eval_count or 0
         trace.total_tokens += (response.prompt_eval_count or 0) + (response.eval_count or 0)
 
-        gen_data = ResponseSchema.model_validate_json(response.message.content)
+        gen_data = response.message.content
 
         print(inspect.cleandoc(
-            f"""
+            f"""\n
             ---RESPONSE GENERATED (no audit)---
-            thought_process : {gen_data.thought_process}
-            output_content  : {gen_data.output_content}
+            response : {gen_data}
             """
         ))
 
         trace.status = "SUCCESS"
-        trace.output_content = gen_data.output_content
+        trace.output_content = gen_data
         # no predicted_status — the judge handles this externally
         return gen_data, trace
 

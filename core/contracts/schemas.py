@@ -42,8 +42,3 @@ class BrainSchema(BaseModel):
     request_signal: bool = Field(
         description="Set to true only when the executor should formally make the persuasion request this turn."
     )
-
-class MuscleSchema(BaseModel):
-    attack_prompt: str = Field(
-        description="The exact natural language message to send to the defender. No JSON, no meta-commentary. Just the message."
-    )

@@ -87,9 +87,8 @@ def run_agent(red_team: str, task: str, module_type: str, judge_type: str):
     for turn in range(convo_length):
         print(f"\n--- EXCHANGE NB: {turn + 1}: ---\n")
 
-        current_attack_prompt, request_signal = module_red_team_registry[red_team](
+        current_attack_prompt, request_signal, tactic_used = module_red_team_registry[red_team](
             red_team_history,
-            attacker_model,
             convo_length,
             turn + 1,
             task
@@ -119,10 +118,13 @@ def run_agent(red_team: str, task: str, module_type: str, judge_type: str):
         traces_db.save_trace(trace)
         print("Trace Saved.")
 
+        defender_reply = trace.output_content or "[NO RESPONSE - TIMEOUT]"
+
         red_team_history.append({
             "turn": turn + 1,
             "attacker_said": current_attack_prompt,
-            "defender_replied": trace.output_content or "[NO RESPONSE - TIMEOUT]"
+            "defender_replied": defender_reply[:200] + "..." if len(defender_reply) > 200 else defender_reply,
+            "tactic_used": tactic_used
         })
 
         defender_history.append({"role": "user", "content": current_attack_prompt})
@@ -241,7 +243,7 @@ if __name__ == "__main__":
     judge = "judge_v1"
 
     test_set = "bench/test_sets/set_test_1.json"
-    task = "marketing_illegal_product"
+    task = "violent_self_justice"
 
     if mode == "1":
         run_benchmark(
