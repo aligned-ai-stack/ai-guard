@@ -18,7 +18,7 @@ def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None,
         history = []
 
     res_model = os.getenv("RESPONSE_MODEL", "llama3.1:8b")
-    framework = "simple_responder_v1"
+    framework = "basic_chatbot_v1"
 
     trace = Trace(
         run_id=run_id,

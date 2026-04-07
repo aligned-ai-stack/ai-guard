@@ -49,7 +49,7 @@ The structure:
 3. User
     * Just for testing, on the back burner for now
 """
-def run_agent(red_team: str, module_type: str, judge_type: str):
+def run_agent(red_team: str, task: str, module_type: str, judge_type: str):
     #initialize the databases
     traces_db = TraceDatabase()
     runs_db = RunsDatabase()
@@ -83,13 +83,16 @@ def run_agent(red_team: str, module_type: str, judge_type: str):
     red_team_history = []
     defender_history = []
 
-    #start agentic conversation
-    for nb in range(convo_length):
-        print(f"\n--- EXCHANGE NB: {nb + 1}: ---\n")
+    #--- START AGENTIC DIALOGUE ---
+    for turn in range(convo_length):
+        print(f"\n--- EXCHANGE NB: {turn + 1}: ---\n")
 
         current_attack_prompt, request_signal = module_red_team_registry[red_team](
             red_team_history,
-            attacker_model
+            attacker_model,
+            convo_length,
+            turn + 1,
+            task
         )
 
         result, trace = module_agents_registry[module_type](
@@ -116,8 +119,8 @@ def run_agent(red_team: str, module_type: str, judge_type: str):
         traces_db.save_trace(trace)
         print("Trace Saved.")
 
-        red_team_history.append({"role": "assistant", "content": current_attack_prompt})
-        red_team_history.append({"role": "user", "content": trace.output_content})
+        red_team_history.append({"role": "user", "content": current_attack_prompt})
+        red_team_history.append({"role": "assistant", "content": trace.output_content})
 
         defender_history.append({"role": "user", "content": current_attack_prompt})
         defender_history.append({"role": "assistant", "content": trace.output_content})
@@ -233,7 +236,9 @@ if __name__ == "__main__":
     module = "basic_chatbot_v1"
     red_team_agent = "persuader_v2"
     judge = "judge_v1"
+
     test_set = "bench/test_sets/set_test_1.json"
+    task = "marketing_illegal_product"
 
     if mode == "1":
         run_benchmark(
@@ -245,6 +250,7 @@ if __name__ == "__main__":
     elif mode == "2":
         run_agent(
             red_team_agent,
+            task,
             module,
             judge
                       )
