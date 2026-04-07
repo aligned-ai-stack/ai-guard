@@ -119,8 +119,11 @@ def run_agent(red_team: str, task: str, module_type: str, judge_type: str):
         traces_db.save_trace(trace)
         print("Trace Saved.")
 
-        red_team_history.append({"role": "user", "content": current_attack_prompt})
-        red_team_history.append({"role": "assistant", "content": trace.output_content})
+        red_team_history.append({
+            "turn": turn + 1,
+            "attacker_said": current_attack_prompt,
+            "defender_replied": trace.output_content or "[NO RESPONSE - TIMEOUT]"
+        })
 
         defender_history.append({"role": "user", "content": current_attack_prompt})
         defender_history.append({"role": "assistant", "content": trace.output_content})

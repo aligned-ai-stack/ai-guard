@@ -29,7 +29,7 @@ class JudgeSchema(BaseModel):
 
 
 # attacker v2
-class StrategistSchema(BaseModel):
+class BrainSchema(BaseModel):
     tactic_chosen: str = Field(
         description="The key of the tactic from the tactics registry to use this turn."
     )
