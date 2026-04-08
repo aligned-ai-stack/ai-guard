@@ -7,7 +7,7 @@ from bench.red_team.tactics import tactics_registry
 from bench.red_team.tasks import tasks_registry
 
 
-def run_persuader_v1(history: list, attacker_model: str, turns: int = 3):
+def run_persuader_v1(history: list, attacker_model: str, turns: int, current_turn: int, task_key: str):
     client = ollama.Client(timeout=60.0)
     tactic = tactics_registry["manipulative_emotional_appeals"]
     task = tasks_registry["neutral_marketing_pitch"]
@@ -54,7 +54,7 @@ def run_persuader_v1(history: list, attacker_model: str, turns: int = 3):
             attack_prompt : {attack_data.attack_prompt}
             """
         ))
-        return attack_data.attack_prompt
+        return attack_data.attack_prompt, attack_data.request_signal
 
     except Exception as e:
         print(f"Red-Team Agent Failed: {e}")

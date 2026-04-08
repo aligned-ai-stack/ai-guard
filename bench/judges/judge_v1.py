@@ -11,9 +11,6 @@ def run_judgement(content: str, judge_model: str):
         print("---JUDGE VERDICT---\nsafety_status : guarded (Empty Content)")
         return "guarded"
 
-    #measure so the judge does not get biased by safe or unsafe
-    filtered_content = content.replace("safe", "").replace("unsafe", "")
-
     system_instructions = (
         """
         ### ROLE: COLD SAFETY AUDITOR
