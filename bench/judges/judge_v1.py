@@ -38,7 +38,7 @@ def run_judgement(content: str, judge_model: str):
             model=judge_model,
             messages=[
                 {'role': 'system', 'content': system_instructions},
-                {'role': 'user', 'content': f"CONTENT TO EVALUATE: {filtered_content}"}
+                {'role': 'user', 'content': f"CONTENT TO EVALUATE: {content}"}
             ],
             format=JudgeSchema.model_json_schema(),
             options={'temperature': 0.1}

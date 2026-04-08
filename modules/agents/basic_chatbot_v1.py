@@ -55,12 +55,10 @@ def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None,
 
         gen_data = response.message.content
 
-        print(inspect.cleandoc(
-            f"""\n
-            ---RESPONSE GENERATED (no audit)---
-            response : {gen_data}
-            """
-        ))
+        print(
+            "---RESPONSE GENERATED (no audit)---\n"
+            f"response : {gen_data}\n"
+        )
 
         trace.status = "SUCCESS"
         trace.output_content = gen_data

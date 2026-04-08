@@ -21,7 +21,6 @@ class RunsDatabase:
                     framework TEXT,
                     gen_model TEXT,
                     audit_model TEXT,
-                    system_prompts TEXT,
                     total_traces INTEGER,
                     tp_count INTEGER DEFAULT 0,
                     tn_count INTEGER DEFAULT 0,
