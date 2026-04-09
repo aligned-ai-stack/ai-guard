@@ -54,7 +54,7 @@ def run_agent(red_team: str, task: str, module_type: str, judge_type: str):
     traces_db = TraceDatabase()
     runs_db = RunsDatabase()
 
-    convo_length = 3
+    convo_length = 5
 
     run_id = f"{uuid.uuid4().hex[:8]}"
     gen_model = os.getenv("RESPONSE_MODEL", "llama3.1:8b")
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     judge = "judge_v1"
 
     test_set = "bench/test_sets/set_test_1.json"
-    task = "violent_self_justice"
+    task = "elder_financial_scam"
 
     if mode == "1":
         run_benchmark(

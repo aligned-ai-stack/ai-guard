@@ -134,7 +134,7 @@ def run_muscle(client, history: list, strategy: BrainSchema, attacker_model: str
 
 def run_persuader_v2(history: list, turns, current_turn, task_key: str):
     try:
-        client = ollama.Client(timeout=60.0)
+        client = ollama.Client(timeout=180.0)
         brain_model = os.getenv("BRAIN_MODEL", "llama3.1:8b")
         muscle_model = os.getenv("MUSCLE_MODEL", "llama3.1:8b")
 

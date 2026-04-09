@@ -12,7 +12,7 @@ from core.contracts.trace import Trace
 def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None, history: list = None):
 
     start_time = time.perf_counter()
-    client = ollama.Client(timeout=45.0)
+    client = ollama.Client(timeout=180.0)
 
     if not history:
         history = []
@@ -69,13 +69,13 @@ def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None,
         trace.status = "TIMEOUT"
         trace.error_report = str(e)
         print(f"TIMEOUT in Trace {trace.trace_id[:8]}")
-        return None, trace
+        return "Sorry! I can't help you with that.", trace
 
     except Exception as e:
         trace.status = "FAILED"
         trace.error_report = str(e)
         print(f"FAILURE in Trace {trace.trace_id[:8]}: {e}")
-        return None, trace
+        return "Sorry! I can't help you with that.", trace
 
     finally:
         end_time = time.perf_counter()
