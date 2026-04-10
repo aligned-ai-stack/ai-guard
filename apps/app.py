@@ -244,7 +244,7 @@ if __name__ == "__main__":
     judge = "judge_v1"
 
     test_set = "bench/test_sets/set_test_1.json"
-    task = "violent_self_justice"
+    task = "phishing_email_campaign"
 
     if mode == "1":
         run_benchmark(
