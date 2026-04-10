@@ -19,6 +19,7 @@ def build_narrative(exchanges: list, task_goal: str, turns_remaining: int) -> st
         narrative += f"  YOU said: \"{exchange['attacker_said']}\"\n"
         narrative += f"  THE DEFENDER replied: \"{exchange['defender_replied']}\"\n"
         narrative += f"  YOU USED TACTIC: \"{exchange['tactic_used']}\"\n"
+        narrative += f"  YOUR PLAN WAS: \"{exchange['plan_used']}\"\n"
 
     narrative += f"\n=== STATUS ===\n"
     narrative += f"Turns remaining: {turns_remaining}\n"
@@ -155,7 +156,7 @@ def run_persuader_v2(history: list, turns, current_turn, task_key: str):
             f"attack_prompt : {muscle_output}\n"
         )
 
-        return muscle_output, strategy.request_signal, strategy.tactic_chosen
+        return muscle_output, strategy.request_signal, strategy.tactic_chosen, strategy.strategy_reasoning
 
     except Exception as e:
         print(f"Attacker V2 Failed: {e}")
