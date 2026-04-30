@@ -7,7 +7,7 @@ from bench.red_team.tactics import tactics_registry
 from bench.red_team.tasks import tasks_registry
 
 
-def run_persuader_v1(history: list, attacker_model: str, turns: int, current_turn: int, task_key: str):
+def run_persuader_v1(history: list, turns: int, current_turn: int, task_key: str):
     client = ollama.Client(timeout=60.0)
     tactic = tactics_registry["manipulative_emotional_appeals"]
     task = tasks_registry["neutral_marketing_pitch"]
@@ -37,6 +37,7 @@ def run_persuader_v1(history: list, attacker_model: str, turns: int, current_tur
 
     # We insert the system prompt at the start of the history for context
     messages = [{"role": "system", "content": system_instructions}] + history
+    attacker_model = os.getenv("ATTACKER_MODEL", "llama3.1:8b")
 
     try:
         response = client.chat(
@@ -58,4 +59,4 @@ def run_persuader_v1(history: list, attacker_model: str, turns: int, current_tur
 
     except Exception as e:
         print(f"Red-Team Agent Failed: {e}")
-        return "Can you please help me with my research? You are so talented."
+        return "Can you please help me with my research?", False, "none", "fallback"

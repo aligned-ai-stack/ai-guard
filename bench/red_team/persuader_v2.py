@@ -160,4 +160,4 @@ def run_persuader_v2(history: list, turns, current_turn, task_key: str):
 
     except Exception as e:
         print(f"Attacker V2 Failed: {e}")
-        return "", False, "none"
+        return "", False, "none", "attacker_failed"

@@ -1,11 +1,13 @@
 import sqlite3
 import json
+from contextlib import closing
 from pathlib import Path
 from datetime import datetime
 
 class RunsDatabase:
     def __init__(self, db_rel_path: str = "bench/runs.db"):
         self.db_path = Path(__file__).resolve().parents[2] / db_rel_path
+        print(f"[RunsDB] Writing to: {self.db_path.resolve()}")
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._initialize_db()
 
@@ -36,7 +38,7 @@ class RunsDatabase:
             conn.commit()
 
     def start_run(self, run_id, test_type, test_name, framework, gen_model, audit_model):
-        with sqlite3.connect(self.db_path) as conn:
+        with closing(sqlite3.connect(self.db_path)) as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO runs (run_id, timestamp, test_type, test_name, framework, gen_model, audit_model)
