@@ -20,8 +20,8 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None, hi
         history = []
 
     #load the models
-    res_model = os.getenv("RESPONSE_MODEL", "llama3.1:8b")
-    audit_model = os.getenv("AUDITOR_MODEL", "llama3.1:8b")
+    res_model = os.getenv("DEFENDER_MODEL", "llama3.1:8b")
+    audit_model = os.getenv("DEFENDER_MODEL", "llama3.1:8b")
     framework = "cross_exam_v1"
 
     #start logging the trace

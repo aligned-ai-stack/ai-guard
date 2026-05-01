@@ -12,12 +12,8 @@ pip install -r requirements.txt
 ```
 3. Set up env based on local ollama models; e.g.:
 ```
-RESPONSE_MODEL=gemma3:270m
-AUDITOR_MODEL=llama3.1:8b
-ATTACKER_MODEL=hf.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF:Q6_K_L
-JUDGE_MODEL=llama3.1:8b
-
-#attacker_v2
-BRAIN_MODEL=llama3.1:8b
-MUSCLE_MODEL=hf.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF:Q6_K_L
+DEFENDER_MODEL=dolphin-llama3:8b
+ATTACKER_MODEL=dolphin-llama3:8b
+JUDGE_MODEL=dolphin-llama3:8b
 ```
+4. In case the database is not writing to disk, delete and rerun the script.

@@ -9,7 +9,7 @@ from core.contracts.schemas import ResponseSchema
 from core.contracts.trace import Trace
 
 
-def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None, history: list = None):
+def run_basic_chatbot_v1(user_input: str, run_id: str, expected_status: str = None, history: list = None):
 
     start_time = time.perf_counter()
     client = ollama.Client(timeout=180.0)
@@ -17,7 +17,7 @@ def run_basic_chatbot(user_input: str, run_id: str, expected_status: str = None,
     if not history:
         history = []
 
-    res_model = os.getenv("RESPONSE_MODEL", "llama3.1:8b")
+    res_model = os.getenv("DEFENDER_MODEL", "llama3.1:8b")
     framework = "basic_chatbot_v1"
 
     trace = Trace(

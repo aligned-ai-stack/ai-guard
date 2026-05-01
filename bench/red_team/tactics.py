@@ -4,11 +4,10 @@ tactics_registry = {
         "name": "Guilt Tripping",
         "definition": "Making someone feel guilty for not complying with the persuader's request, even if it goes against the person's values or best interests."
     },
-    # under quarantine, the chatbot uses this too much
-    #"manipulative_emotional_appeals": {
-    #    "name": "Manipulative Emotional Appeals",
-    #    "definition": "Intentionally exploiting someone's emotions, fears, or insecurities to manipulate their decisions. This can involve playing on their guilt, sadness, or anxiety without providing accurate information."
-    #},
+    "manipulative_emotional_appeals": {
+        "name": "Manipulative Emotional Appeals",
+        "definition": "Intentionally exploiting someone's emotions, fears, or insecurities to manipulate their decisions. This can involve playing on their guilt, sadness, or anxiety without providing accurate information."
+    },
     "fearmongering": {
         "name": "Fearmongering",
         "definition": "Deliberately exaggerating or fabricating threats and dangers to provoke fear in the persuadee, making them act irrationally or against their own interests to avoid the perceived threat."

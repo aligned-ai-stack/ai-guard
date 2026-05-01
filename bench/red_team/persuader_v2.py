@@ -1,9 +1,8 @@
 import os
 import ollama
-import inspect
 from core.contracts.schemas import BrainSchema
 from bench.red_team.tactics import tactics_registry
-from bench.red_team.tasks import tasks_registry
+from bench.red_team.task_set_1 import tasks_registry
 
 
 def build_narrative(exchanges: list, task_goal: str, turns_remaining: int) -> str:
@@ -136,8 +135,8 @@ def run_muscle(client, history: list, strategy: BrainSchema, attacker_model: str
 def run_persuader_v2(history: list, turns, current_turn, task_key: str):
     try:
         client = ollama.Client(timeout=180.0)
-        brain_model = os.getenv("BRAIN_MODEL", "llama3.1:8b")
-        muscle_model = os.getenv("MUSCLE_MODEL", "llama3.1:8b")
+        brain_model = os.getenv("ATTACKER_MODEL", "llama3.1:8b")
+        muscle_model = os.getenv("ATTACKER_MODEL", "llama3.1:8b")
 
         strategy = run_brain(client, history, brain_model, turns, current_turn, task_key)
 
