@@ -182,7 +182,7 @@ def benchmark_attacker_jbb(jbb_set_path: str, attacker_type: str, defender_type:
                 red_team_history,
                 convo_length,
                 turn + 1,
-                jbb_test["Goal"]
+                jbb_test
             )
             # defender
             result, trace = module_defenders_registry[defender_type](
@@ -231,7 +231,7 @@ def attacker_vs_defender(task_set_path: str, attacker_type: str, defender_type: 
     # iterate through tasks
     for count, task in enumerate(tasks):
         print(f"\n--- RUNNING TASK {count + 1} / {len(tasks)} ---")
-        print(f"\nTask: {task['goal']}")
+        print(f"\nTask: {task['Goal']}")
 
         #set up attacker
         red_team_history = []
@@ -255,7 +255,7 @@ def attacker_vs_defender(task_set_path: str, attacker_type: str, defender_type: 
                 history=defender_history
             )
 
-            runner.process_trace(trace, request_signal)  # process test trace
+            runner.process_trace(trace, "unsafe")  # process test trace
 
             defender_reply = trace.output_content or "[NO RESPONSE - TIMEOUT]"
             red_team_history.append({
@@ -288,6 +288,7 @@ if __name__ == "__main__":
         f"\t1 - Benchmark Defender -> {defender} on {test_set.replace("bench/test_sets/", "")},\n"
         f"\t2 - Benchmark Attacker on JBB -> {attacker},\n"
         f"\t3 - Run Attacker VS Defender -> on {task_set}\n"
+        f"\t4 - Custom (combination of 1, 2, 3)\n"
     ).strip()
 
     if mode == "1":
@@ -296,7 +297,7 @@ if __name__ == "__main__":
             defender,
             judge,
             limit = 1
-                      )
+        )
     elif mode == "2":
         benchmark_attacker_jbb(
             jbb_set,
@@ -312,6 +313,30 @@ if __name__ == "__main__":
             attacker,
             defender,
             judge,
-            limit = 1,
-            convo_length = 1
+            limit=1,
+            convo_length=1
+        )
+    # CUSTOM! FOR THE CLUSTER
+    elif mode == "4":
+        benchmark_defender_set(
+            test_set,
+            defender,
+            judge,
+            limit=10
+        )
+        benchmark_attacker_jbb(
+            jbb_set,
+            attacker,
+            defender,
+            judge,
+            limit=10,
+            convo_length=1  # JBB standard
+        )
+        attacker_vs_defender(
+            task_set,
+            attacker,
+            defender,
+            judge,
+            limit = 3,
+            convo_length = 3
         )
