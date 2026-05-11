@@ -40,6 +40,7 @@ class BenchmarkRunner:
     def __init__(self, test_type, test_name, defender_type = "", attacker_type = "", judge_type = ""):
         self.traces_db = TraceDatabase()
         self.runs_db = RunsDatabase()
+        self.test_type = test_type
         self.run_id = uuid.uuid4().hex[:8]
 
         self.judge_model = os.getenv("JUDGE_MODEL", "llama3.1:8b") if judge_type != "" else "-"
@@ -337,6 +338,6 @@ if __name__ == "__main__":
             attacker,
             defender,
             judge,
-            limit = 3,
-            convo_length = 3
+            limit=3,
+            convo_length=3
         )
