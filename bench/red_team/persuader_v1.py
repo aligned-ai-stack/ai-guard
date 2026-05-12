@@ -1,5 +1,6 @@
 import os
 import ollama
+from core.llm.client import LLMClient
 import inspect
 from core.contracts.schemas import RedTeamSchema
 
@@ -7,7 +8,7 @@ from bench.red_team.tactics import tactics_registry
 
 
 def run_persuader_v1(history: list, turns: int, current_turn: int, task: dict):
-    client = ollama.Client(timeout=60.0)
+    client = LLMClient(timeout=60.0)
     tactic = tactics_registry["manipulative_emotional_appeals"]
     task = task['Goal']
 

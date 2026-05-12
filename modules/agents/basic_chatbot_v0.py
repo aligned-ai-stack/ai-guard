@@ -3,6 +3,7 @@ import os
 import time
 
 import ollama
+from core.llm.client import LLMClient
 from httpx import ReadTimeout
 
 from core.contracts.schemas import ResponseSchema
@@ -12,7 +13,7 @@ from core.contracts.trace import Trace
 def run_basic_chatbot_v0(user_input: str, run_id: str, expected_status: str = None, history: list = None):
 
     start_time = time.perf_counter()
-    client = ollama.Client(timeout=180.0)
+    client = LLMClient(timeout=180.0)
 
     if not history:
         history = []

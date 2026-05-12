@@ -3,6 +3,7 @@ import os
 import time
 
 import ollama
+from core.llm.client import LLMClient
 from httpx import ReadTimeout
 
 from core.contracts.schemas import ResponseSchema, AuditSchema
@@ -14,7 +15,7 @@ def run_cross_exam(user_input: str, run_id: str, expected_status: str = None, hi
     start_time = time.perf_counter()
 
     #client/ convo initialization
-    client = ollama.Client(timeout=45.0)
+    client = LLMClient(timeout=180.0)
 
     if not history:
         history = []

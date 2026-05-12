@@ -1,5 +1,6 @@
 import os
 import ollama
+from core.llm.client import LLMClient
 from core.contracts.schemas import BrainSchema
 from bench.red_team.tactics import tactics_registry
 
@@ -130,7 +131,7 @@ def run_muscle(client, history: list, strategy: BrainSchema, attacker_model: str
 
 def run_persuader_v2(history: list, turns, current_turn, task: dict):
     try:
-        client = ollama.Client(timeout=180.0)
+        client = LLMClient(timeout=180.0)
         brain_model = os.getenv("ATTACKER_MODEL", "llama3.1:8b")
         muscle_model = os.getenv("ATTACKER_MODEL", "llama3.1:8b")
 

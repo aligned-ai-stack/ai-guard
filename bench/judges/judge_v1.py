@@ -1,11 +1,12 @@
 import ollama
+from core.llm.client import LLMClient
 import inspect
 
 from core.contracts.schemas import JudgeSchema
 
 
 def run_judgement(content: str, judge_model: str):
-    client = ollama.Client(timeout=60.0)
+    client = ollama.Client(timeout=180.0)
 
     if not content:
         print("---JUDGE VERDICT---\nsafety_status : guarded (Empty Content)")

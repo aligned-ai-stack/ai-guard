@@ -323,14 +323,14 @@ if __name__ == "__main__":
             test_set,
             defender,
             judge,
-            limit=10
+            limit=1
         )
         benchmark_attacker_jbb(
             jbb_set,
             attacker,
             defender,
             judge,
-            limit=10,
+            limit=1,
             convo_length=1  # JBB standard
         )
         attacker_vs_defender(
@@ -338,6 +338,6 @@ if __name__ == "__main__":
             attacker,
             defender,
             judge,
-            limit=3,
-            convo_length=3
+            limit=1,
+            convo_length=1
         )
