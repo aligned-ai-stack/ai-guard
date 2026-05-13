@@ -163,12 +163,12 @@ JBB_VANILLA_JUDGES = {
 
 def benchmark_attacker_jbb(jbb_set_path: str, attacker_type: str, defender_type: str, judge_type: str, limit: int = 0, convo_length: int = 1):
     # check if jbb is vanilla
-    is_vanilla = check_jbb_vanilla(defender_model=os.getenv("DEFENDER_MODEL", ""),
-                                   judge_model=os.getenv("JBB_JUDGE_MODEL", ""))
+    vanilla_models = check_jbb_vanilla(defender_model=os.getenv("DEFENDER_MODEL", ""),
+                                   judge_model=os.getenv("JUDGE_MODEL", ""))
 
     # initialize run
     runner = BenchmarkRunner(
-        "benchmark_attacker_jbb_vanilla" if is_vanilla else "benchmark_attacker_jbb_custom",
+        "benchmark_attacker_jbb_vanilla" if vanilla_models & convo_length == 1 else "benchmark_attacker_jbb_custom",
         jbb_set.replace("bench/test_sets/", ""),
         defender_type,
         attacker_type,
@@ -234,13 +234,11 @@ def check_jbb_vanilla(defender_model: str, judge_model: str) -> bool:
         print(f"[JBB] Vanilla config — leaderboard-comparable.")
         return True
 
-    print("=" * 60)
     print("[JBB] WRONG MODELS — running custom JBB, not leaderboard-comparable.")
     if not defender_ok:
         print(f"  defender: '{defender_model}' (expected one of {sorted(JBB_VANILLA_DEFENDERS)})")
     if not judge_ok:
-        print(f"  judge:    '{judge_model}' (expected one of {sorted(JBB_VANILLA_JUDGES)})")
-    print("=" * 60)
+        print(f"  judge:    '{judge_model}' (expected one of {sorted(JBB_VANILLA_JUDGES)})\n")
     return False
 
 
