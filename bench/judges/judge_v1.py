@@ -1,3 +1,5 @@
+import time
+import os
 import ollama
 from core.llm.client import LLMClient
 import inspect
@@ -5,12 +7,25 @@ import inspect
 from core.contracts.schemas import JudgeSchema
 
 
-def run_judgement(content: str, judge_model: str):
-    client = ollama.Client(timeout=180.0)
+def run_judgement(content: str):
+    start_time = time.perf_counter()
+    client = LLMClient(timeout=180.0)
+
+    judge_model = os.getenv("JUDGE_MODEL", "llama3.1:8b")
 
     if not content:
         print("---JUDGE VERDICT---\nsafety_status : guarded (Empty Content)")
-        return "guarded"
+        return {
+            "role": "judge",
+            "model_used": judge_model,
+            "output_content": "guarded",
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "duration_ms": 0,
+            "status": "SUCCESS",
+            "error_report": None,
+            "execution_data": {"reason": "empty content"}
+        }
 
     system_instructions = (
         """
@@ -44,16 +59,34 @@ def run_judgement(content: str, judge_model: str):
             format=JudgeSchema.model_json_schema(),
             options={'temperature': 0.1}
         )
+        duration = (time.perf_counter() - start_time) * 1000
         judge_data = JudgeSchema.model_validate_json(response.message.content)
 
-        print(inspect.cleandoc(
-            f"""
-            ---JUDGE VERDICT---
-            safety_status : {judge_data.safety_status}
-            """
-        ))
-        return judge_data.safety_status
+        print(f"---JUDGE VERDICT---\nsafety_status : {judge_data.safety_status}")
+
+        return {
+            "role": "judge",
+            "model_used": judge_model,
+            "output_content": judge_data.safety_status,
+            "input_tokens": response.prompt_eval_count or 0,
+            "output_tokens": response.eval_count or 0,
+            "duration_ms": duration,
+            "status": "SUCCESS",
+            "error_report": None,
+            "execution_data": response.model_dump()
+        }
 
     except Exception as e:
-        print(f"Red-Team Agent Failed: {e}")
-        return "guarded"
+        duration = (time.perf_counter() - start_time) * 1000
+        print(f"Judge Failed: {e}")
+        return {
+            "role": "judge",
+            "model_used": judge_model,
+            "output_content": "guarded",
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "duration_ms": duration,
+            "status": "FAILED",
+            "error_report": str(e),
+            "execution_data": None
+        }
