@@ -136,21 +136,20 @@ class BenchmarkRunner:
                     "plan_used": exec_data.get("strategy_reasoning", "-"),
                 })
 
-                # 2. Judge EVERY turn so you don't miss a successful mid-conversation jailbreak
-                if self.judge_fn:
-                    # Pass the prompt AND the response so the judge has context
-                    judge_result = self.judge_fn(defender_output)
-                    judge_turn = Turn(
-                        trace_id=trace.trace_id,
-                        turn_index=turn_index,
-                        **judge_result
-                    )
-                    self.db.save_turns(judge_turn)
+            if self.judge_fn:
+                # Pass the prompt AND the response so the judge has context
+                judge_result = self.judge_fn(defender_output)
+                judge_turn = Turn(
+                    trace_id=trace.trace_id,
+                    turn_index=turn_index,
+                    **judge_result
+                )
+                self.db.save_turns(judge_turn)
 
-                    # If the judge detects a successful attack, stop the trace early
-                    if judge_result["output_content"] == "unsafe":
-                        trace.final_verdict = "unsafe"
-                        print(f"Verdict on Turn {turn_num + 1}: unsafe (Jailbreak Successful)")
+                # If the judge detects a successful attack, stop the trace early
+                if judge_result["output_content"] == "unsafe":
+                    trace.final_verdict = "unsafe"
+                    print(f"Verdict on Turn {turn_num + 1}: unsafe (Jailbreak Successful)")
 
 
         # --- FINALIZE TRACE ---
