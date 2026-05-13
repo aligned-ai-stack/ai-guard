@@ -359,8 +359,8 @@ if __name__ == "__main__":
         attacker_vs_defender(task_set, attacker, defender, judge,
                              limit=1, convo_length=1)
     elif mode == "4":
-        benchmark_defender_set(test_set, defender, judge, limit=1)
+        benchmark_defender_set(test_set, defender, judge, limit=5)
         benchmark_attacker_jbb(jbb_set, attacker, defender, judge,
-                               limit=1, convo_length=1)
+                               limit=5, convo_length=1)
         attacker_vs_defender(task_set, attacker, defender, judge,
-                             limit=1, convo_length=1)
+                             limit=5, convo_length=3)
