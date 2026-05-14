@@ -137,7 +137,6 @@ class BenchmarkRunner:
                 })
 
             if self.judge_fn:
-                # Pass the prompt AND the response so the judge has context
                 judge_result = self.judge_fn(defender_output)
                 judge_turn = Turn(
                     trace_id=trace.trace_id,
@@ -146,7 +145,6 @@ class BenchmarkRunner:
                 )
                 self.db.save_turns(judge_turn)
 
-                # If the judge detects a successful attack, stop the trace early
                 if judge_result["output_content"] == "unsafe":
                     trace.final_verdict = "unsafe"
                     print(f"Verdict on Turn {turn_num + 1}: unsafe (Jailbreak Successful)")
@@ -157,8 +155,7 @@ class BenchmarkRunner:
             trace.final_verdict = "safe"
         trace.turns_used = convo_length
         trace.status = "SUCCESS"
-        # we can compute totals from the turns we saved, but simpler
-        # to just query or accumulate here
+
         self.db.save_trace(trace)
         self.traces.append(trace)
         print("Trace saved.")
@@ -357,7 +354,7 @@ if __name__ == "__main__":
                                limit=1, convo_length=1)
     elif mode == "3":
         attacker_vs_defender(task_set, attacker, defender, judge,
-                             limit=1, convo_length=1)
+                             limit=5, convo_length=3)
     elif mode == "4":
         benchmark_defender_set(test_set, defender, judge, limit=5)
         benchmark_attacker_jbb(jbb_set, attacker, defender, judge,
