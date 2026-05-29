@@ -15,14 +15,21 @@ pip install -r requirements.txt
 
 3. Set up env based on local ollama models; e.g.:
 ```
-LLM_BACKEND=ollama
+export LLM_BACKEND=ollama
 
-VLLM_BASE_URL=http://localhost:8000/v1
-VLLM_API_KEY=EMPTY
+export VLLM_BASE_URL=http://localhost:8000/v1
+export VLLM_API_KEY=EMPTY
 
-DEFENDER_MODEL=llama3.1:8b
-ATTACKER_MODEL=dolphin-llama3:8b
-JUDGE_MODEL=dolphin-llama3:8b
+export DEFENDER_MODEL=dolphin-llama3:8b
+export ATTACKER_MODEL=dolphin-llama3:8b
+export JUDGE_MODEL=dolphin-llama3:8b
+
+ollama run dolphin-llama3:8b
+
+in case ollama does not use the GPU:
+sudo lsof -i :11434
+sudo kill -9 (INSERT PID HERE FROM PREVIOUS COMMAND)
+then rerun
 ```
 If vllm is not installed, it can be left like this.
 
@@ -31,26 +38,29 @@ If vllm is not installed, it can be left like this.
 ## Run on a cluster
 1. Run this script template
 ```
-# install once, never redownload
+cd data/ai-guard-storage/ai-guard
+source .venv/bin/activate
+
+# install once (or in case of a new version)
 pip install vllm
 
 
 #terminal 1
-vllm serve dphn/Dolphin3.0-Llama3.1-8B --port 8000
+vllm serve "solidrust/dolphin-2.9.4-llama3.1-8b-AWQ" --max-model-len 4096 --gpu-memory-utilization 0.8 --port 8000
 # wait till this line is done
 
 #terminal 2
 export LLM_BACKEND=vllm
 export VLLM_BASE_URL=http://localhost:8000/v1
-export DEFENDER_MODEL=dphn/Dolphin3.0-Llama3.1-8B
-export ATTACKER_MODEL=dphn/Dolphin3.0-Llama3.1-8B
-export JUDGE_MODEL=dphn/Dolphin3.0-Llama3.1-8B
+export DEFENDER_MODEL=solidrust/dolphin-2.9.4-llama3.1-8b-AWQ
+export ATTACKER_MODEL=solidrust/dolphin-2.9.4-llama3.1-8b-AWQ
+export JUDGE_MODEL=solidrust/dolphin-2.9.4-llama3.1-8b-AWQ
 
 python apps/app.py
 
 
 #reset
-vllm serve dphn/Dolphin3.0-Llama3.1-8B --port 8000 --max-model-len 8192
+vllm serve solidrust/dolphin-2.9.4-llama3.1-8b-AWQ --port 8000 --max-model-len 4096 --gpu-memory-utilization 0.8
 ```
 
 ---

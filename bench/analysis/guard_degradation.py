@@ -18,7 +18,7 @@ from pathlib import Path
 
 DB_PATH = Path(__file__).resolve().parent.parent / "benchmark.db"
 
-DATE_START = "2026-05-14T00:00:00"
+DATE_START = "2026-05-13T00:00:00"
 DATE_END = "2026-05-15T00:00:00"
 
 conn = sqlite3.connect(DB_PATH)
