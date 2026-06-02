@@ -50,7 +50,7 @@ def run_persuader_v1(task: dict, history: list, agent_state: dict, turns: int, c
             model=attacker_model,
             messages=messages,
             format=RedTeamSchema.model_json_schema(),
-            options={'temperature': 0.3}
+            options={'temperature': 0.3, 'num_ctx': 8192}
         )
 
         duration = (time.perf_counter() - start_time) * 1000

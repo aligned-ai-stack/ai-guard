@@ -10,7 +10,7 @@ from core.contracts.schemas import ResponseSchema, AuditSchema
 from core.contracts.models import Trace
 
 
-def run_cross_exam(user_input: str, history: list = None):
+def run_cross_exam(user_input: str, history: list = None, defender_state: dict = None):
 
     start_time = time.perf_counter()
     client = LLMClient(timeout=180.0)
@@ -173,7 +173,7 @@ def run_cross_exam(user_input: str, history: list = None):
             }
         })
 
-        return turns
+        return turns, defender_state
 
     except (ReadTimeout, ollama.ResponseError) as e:
         duration = (time.perf_counter() - start_time) * 1000
@@ -189,7 +189,7 @@ def run_cross_exam(user_input: str, history: list = None):
             "error_report": str(e),
             "execution_data": None
         })
-        return turns
+        return turns, defender_state
 
     except Exception as e:
         duration = (time.perf_counter() - start_time) * 1000
@@ -205,4 +205,4 @@ def run_cross_exam(user_input: str, history: list = None):
             "error_report": str(e),
             "execution_data": None
         })
-        return turns
+        return turns, defender_state

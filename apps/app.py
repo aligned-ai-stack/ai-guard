@@ -97,7 +97,8 @@ class BenchmarkRunner:
         self.db.save_trace(trace)
 
         conversation_history = []   # universal, it states which agent said what
-        agent_state = {}
+        attacker_state = {}
+        defender_state = {}
         turn_index = 0
 
         # walks through all turns in one round
@@ -109,8 +110,8 @@ class BenchmarkRunner:
             if self.attacker_fn and task:
                 attacker_history = frame_history(conversation_history, "attacker")
 
-                attacker_turns = self.attacker_fn(
-                    task, attacker_history, agent_state, convo_length, turn_num + 1
+                attacker_turns, attacker_state = self.attacker_fn(
+                    task, attacker_history, attacker_state, convo_length, turn_num + 1
                 )
                 # save attacker turns
                 for t in attacker_turns:
@@ -128,8 +129,8 @@ class BenchmarkRunner:
             # --- DEFENDER, always called ---
             defender_history = frame_history(conversation_history, "defender")
 
-            defender_turns = self.defender_fn(
-                attack_prompt, history=defender_history
+            defender_turns, defender_state = self.defender_fn(
+                attack_prompt, defender_history, defender_state
             )
             # save defender turns
             for t in defender_turns:
@@ -347,8 +348,8 @@ def attacker_vs_defender(task_set_path: str, attacker_type: str, defender_type: 
 # --- START OF THE APP ---
 if __name__ == "__main__":
 
-    defender = "basic_chatbot_v0"
-    attacker = "persuader_v1"
+    defender = "cross_exam_v1"
+    attacker = "persuader_v2"
     judge = "judge_v1"
 
     test_set = "bench/test_sets/test_set_1.json"
