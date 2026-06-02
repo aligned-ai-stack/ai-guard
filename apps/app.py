@@ -39,6 +39,19 @@ judge_registry = {
     "judge_v1": run_judgement,  # basic with system prompt
 }
 
+# --- HISTORY UTILS ---
+def frame_history(conversation, perspective):
+    """Frame the conversation history such that:
+    -for the defender, he is the assistant and the attacker is the user
+    -for the attacker, he is the assistant and the defender is the user"""
+    framed = []
+    for msg in conversation:
+        if msg["role"] == perspective:
+            framed.append({"role": "assistant", "content": msg["content"]})
+        else:
+            framed.append({"role": "user", "content": msg["content"]})
+    return framed
+
 
 # --- BENCHMARK ADMINISTRATION ---
 class BenchmarkRunner:
@@ -83,18 +96,21 @@ class BenchmarkRunner:
         )
         self.db.save_trace(trace)
 
-        defender_history = []
-        red_team_history = []
+        conversation_history = []   # universal, it states which agent said what
+        agent_state = {}
         turn_index = 0
 
+        # walks through all turns in one round
         for turn_num in range(convo_length):
             print(f"\n--- EXCHANGE {turn_num + 1}/{convo_length} ---")
 
-            # --- ATTACKER (if present) ---
+            # --- ATTACKER, call only if we have a task and attacker inserted ---
             attack_prompt = prompt
             if self.attacker_fn and task:
+                attacker_history = frame_history(conversation_history, "attacker")
+
                 attacker_turns = self.attacker_fn(
-                    task, red_team_history, convo_length, turn_num + 1
+                    task, attacker_history, agent_state, convo_length, turn_num + 1
                 )
                 # save attacker turns
                 for t in attacker_turns:
@@ -104,12 +120,14 @@ class BenchmarkRunner:
                         **t
                     )
                     self.db.save_turns(turn)
-                    turn_index += 1
-
+                    turn_index += 1 # next turn
                 # the attack prompt is the last attacker turn's output
                 attack_prompt = attacker_turns[-1]["output_content"]
 
-            # --- DEFENDER ---
+
+            # --- DEFENDER, always called ---
+            defender_history = frame_history(conversation_history, "defender")
+
             defender_turns = self.defender_fn(
                 attack_prompt, history=defender_history
             )
@@ -122,25 +140,18 @@ class BenchmarkRunner:
                 )
                 self.db.save_turns(turn)
                 turn_index += 1
-
             # the final defender output is the last turn's content
             defender_output = defender_turns[-1]["output_content"] or ""
 
-            # --- UPDATE HISTORIES ---
-            defender_history.append({"role": "user", "content": attack_prompt})
-            defender_history.append({"role": "assistant", "content": defender_output})
 
-            if self.attacker_fn and task:
-                last_attacker = attacker_turns[-1]
-                exec_data = last_attacker.get("execution_data") or {}
-                red_team_history.append({
-                    "turn": turn_num + 1,
-                    "attacker_said": attack_prompt,
-                    "defender_replied": defender_output,  # Removed [:200]
-                    "tactic_used": exec_data.get("tactic_used", "none"),
-                    "plan_used": exec_data.get("strategy_reasoning", "-"),
-                })
+            # --- UPDATE CANONICAL HISTORY ---
+            conversation_history.append({"role": "attacker", "content": attack_prompt})
+            conversation_history.append({"role": "defender", "content": defender_output})
 
+
+            # --- JUDGE ---
+            # note, this if-check is redundant, unless if we go for more
+            # objective checks in the future where we do not need an agent
             if self.judge_fn:
                 judge_result = self.judge_fn(defender_output)
                 judge_turn = Turn(
