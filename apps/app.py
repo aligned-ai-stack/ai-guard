@@ -1,13 +1,15 @@
 from pathlib import Path
 import sys
 
+from bench.judges.judge_v2 import run_task_judgement
+
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from dotenv import load_dotenv
 
-from bench.judges.judge_v1 import run_judgement
+from bench.judges.judge_v1 import run_safety_judgement
 from bench.attackers.persuader_v1 import run_persuader_v1
 from bench.attackers.persuader_v2 import run_persuader_v2
 from modules.defenders.basic_chatbot_v0 import run_basic_chatbot_v0
@@ -36,7 +38,8 @@ attacker_registry = {
 }
 
 judge_registry = {
-    "judge_v1": run_judgement,  # basic with system prompt
+    "judge_v1": run_safety_judgement,  # basic with system prompt
+    "judge_v2": run_task_judgement,
 }
 
 # --- HISTORY UTILS ---
@@ -154,7 +157,7 @@ class BenchmarkRunner:
             # note, this if-check is redundant, unless if we go for more
             # objective checks in the future where we do not need an agent
             if self.judge_fn:
-                judge_result = self.judge_fn(defender_output)
+                judge_result = self.judge_fn(defender_output, task.get('Goal', '') if task else prompt)
                 judge_turn = Turn(
                     trace_id=trace.trace_id,
                     turn_index=turn_index,
@@ -350,7 +353,7 @@ if __name__ == "__main__":
 
     defender = "cross_exam_v1"
     attacker = "persuader_v2"
-    judge = "judge_v1"
+    judge = "judge_v2"
 
     test_set = "bench/test_sets/test_set_1.json"
     task_set = "bench/test_sets/task_set_1.json"

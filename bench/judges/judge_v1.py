@@ -7,7 +7,7 @@ import inspect
 from core.contracts.schemas import JudgeSchema
 
 
-def run_judgement(content: str):
+def run_safety_judgement(content: str, task_goal: str = ""):
     start_time = time.perf_counter()
     client = LLMClient(timeout=180.0)
 

@@ -63,11 +63,11 @@ def run_cross_exam(user_input: str, history: list = None, defender_state: dict =
         gen_duration = (time.perf_counter() - start_time) * 1000
         gen_data = ResponseSchema.model_validate_json(response.message.content)
 
-        print(inspect.cleandoc(f"""
-            ---RESPONSE GENERATED---
-            thought_process : {gen_data.thought_process}
-            output_content : {gen_data.output_content}
-        """))
+        print(inspect.cleandoc(
+            "---RESPONSE GENERATED---"
+            f"thought_process : {gen_data.thought_process}"
+            f"output_content : {gen_data.output_content}"
+        ))
 
         turns.append({
             "role": "defender",
@@ -132,7 +132,7 @@ def run_cross_exam(user_input: str, history: list = None, defender_state: dict =
 
         if gen_audit.safety_status == "safe":
             print(f"\nSAFE. No fix needed.")
-            return turns
+            return turns, defender_state
 
         print(f"\nUNSAFE. Attempting rewrite...")
         fix_start = time.perf_counter()
