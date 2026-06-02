@@ -93,4 +93,4 @@ def run_persuader_v1(task: dict, history: list, agent_state: dict, turns: int, c
             "error_report": str(e),
             "execution_data": None
         }
-        return [turn_dict]
+        return [turn_dict], agent_state
