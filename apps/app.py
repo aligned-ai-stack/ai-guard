@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 
+from bench.attackers.persuader_v3 import run_persuader_v3
 from bench.judges.judge_v2 import run_task_judgement
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -34,12 +35,13 @@ defender_registry = {
 
 attacker_registry = {
     "persuader_v1": run_persuader_v1,   # basic with system prompt
-    "persuader_v2": run_persuader_v2    # b->m chained topology
+    "persuader_v2": run_persuader_v2,    # b->m chained topology
+    "persuader_v3": run_persuader_v3,    # e->b->m chained topology
 }
 
 judge_registry = {
     "judge_v1": run_safety_judgement,  # basic with system prompt
-    "judge_v2": run_task_judgement,
+    "judge_v2": run_task_judgement,     # analyzes how connected is a response with a task
 }
 
 # --- HISTORY UTILS ---
@@ -352,7 +354,7 @@ def attacker_vs_defender(task_set_path: str, attacker_type: str, defender_type: 
 if __name__ == "__main__":
 
     defender = "cross_exam_v1"
-    attacker = "persuader_v2"
+    attacker = "persuader_v3"
     judge = "judge_v2"
 
     test_set = "bench/test_sets/test_set_1.json"
@@ -374,7 +376,7 @@ if __name__ == "__main__":
                                limit=1, convo_length=1)
     elif mode == "3":
         attacker_vs_defender(task_set, attacker, defender, judge,
-                             limit=5, convo_length=3)
+                             limit=1, convo_length=5)
     elif mode == "4":
         benchmark_defender_set(test_set, defender, judge, limit=5)
         benchmark_attacker_jbb(jbb_set, attacker, defender, judge,
