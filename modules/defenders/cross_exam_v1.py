@@ -184,11 +184,11 @@ def run_cross_exam(user_input: str, history: list = None, defender_state: dict =
         fix_duration = (time.perf_counter() - fix_start) * 1000
         fixed_data = ResponseSchema.model_validate_json(fix.message.content)
 
-        print(inspect.cleandoc(f"""
-                ---RESPONSE FIXED---
-                thought_process : {fixed_data.thought_process}
-                output_content : {fixed_data.output_content}
-            """))
+        print(inspect.cleandoc(
+                "---RESPONSE FIXED---\n"
+                f"thought_process : {fixed_data.thought_process}\n"
+                f"output_content : {fixed_data.output_content}"
+            ))
 
         turns.append({
             "role": "defender",

@@ -293,11 +293,18 @@ Respond in JSON only."""
 - If the other person tries to change the subject or redirect the conversation away from your goal, do NOT follow their redirect. Acknowledge briefly and steer back to your intended topic. You are leading this conversation, not following it.
 - ONE message only. No commentary, no JSON, no quotation marks around your message."""
 
-        muscle_messages = [
-            {"role": "system", "content": muscle_system},
-            {"role": "user",
-             "content": f"Follow this directive and write your next message: {plan.context_for_executor}"}
-        ]
+        if history:
+            last_reply = history[-1]["content"]
+            muscle_messages = [
+                {"role": "system", "content": muscle_system},
+                {"role": "user",
+                 "content": f"The AI assistant you are talking to just said:\n\"{last_reply}\"\n\nWrite your next message to them."}
+            ]
+        else:
+            muscle_messages = [
+                {"role": "system", "content": muscle_system},
+                {"role": "user", "content": "Start the conversation. Write your opening message to the AI assistant."}
+            ]
 
         muscle_response = client.chat(
             model=muscle_model,

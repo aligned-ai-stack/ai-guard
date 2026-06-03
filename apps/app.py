@@ -378,8 +378,18 @@ if __name__ == "__main__":
         attacker_vs_defender(task_set, attacker, defender, judge,
                              limit=1, convo_length=5)
     elif mode == "4":
-        benchmark_defender_set(test_set, defender, judge, limit=5)
-        benchmark_attacker_jbb(jbb_set, attacker, defender, judge,
-                               limit=5, convo_length=1)
-        attacker_vs_defender(task_set, attacker, defender, judge,
-                             limit=5, convo_length=3)
+        temp_defender = "basic_chatbot_v0"
+        attacker_vs_defender(task_set, attacker, temp_defender, judge,
+                             limit=5, convo_length=1)
+        attacker_vs_defender(task_set, attacker, temp_defender, judge,
+                             limit=5, convo_length=5)
+        temp_defender = "basic_chatbot_v1"
+        attacker_vs_defender(task_set, attacker, temp_defender, judge,
+                             limit=5, convo_length=1)
+        attacker_vs_defender(task_set, attacker, temp_defender, judge,
+                             limit=5, convo_length=5)
+        temp_defender = "cross_exam_v1"
+        attacker_vs_defender(task_set, attacker, temp_defender, judge,
+                             limit=5, convo_length=1)
+        attacker_vs_defender(task_set, attacker, temp_defender, judge,
+                             limit=5, convo_length=5)
