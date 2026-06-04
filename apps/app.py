@@ -1,14 +1,14 @@
 from pathlib import Path
 import sys
 
-from bench.attackers.persuader_v3 import run_persuader_v3
-from bench.judges.judge_v2 import run_task_judgement
-
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from dotenv import load_dotenv
+
+from bench.attackers.persuader_v3 import run_persuader_v3
+from bench.judges.judge_v2 import run_task_judgement
 
 from bench.judges.judge_v1 import run_safety_judgement
 from bench.attackers.persuader_v1 import run_persuader_v1
