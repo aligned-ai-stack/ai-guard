@@ -363,7 +363,7 @@ if __name__ == "__main__":
 
     mode = input(
         "Input number:\n"
-        f"\t1 - Benchmark Defender -> {defender} on {test_set.replace("bench/test_sets/", "")},\n"
+        f"\t1 - Benchmark Defender -> {defender} on {test_set.replace("bench/test_sets/", '')},\n"
         f"\t2 - Benchmark Attacker on JBB -> {attacker},\n"
         f"\t3 - Run Attacker VS Defender -> on {task_set}\n"
         f"\t4 - Custom (combination of 1, 2, 3)\n"

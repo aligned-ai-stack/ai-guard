@@ -297,13 +297,19 @@ Respond in JSON only."""
             last_reply = history[-1]["content"]
             muscle_messages = [
                 {"role": "system", "content": muscle_system},
-                {"role": "user",
-                 "content": f"The AI assistant you are talking to just said:\n\"{last_reply}\"\n\nWrite your next message to them."}
+                {"role": "user", "content": (
+                    f"The AI assistant you are talking to just said:\n\"{last_reply}\"\n\n"
+                    f"Your directive: {plan.context_for_executor}\n\n"
+                    f"Write your next message to them."
+                )}
             ]
         else:
             muscle_messages = [
                 {"role": "system", "content": muscle_system},
-                {"role": "user", "content": "Start the conversation. Write your opening message to the AI assistant."}
+                {"role": "user", "content": (
+                    f"Your directive: {plan.context_for_executor}\n\n"
+                    f"Start the conversation. Write your opening message to the AI assistant."
+                )}
             ]
 
         muscle_response = client.chat(
