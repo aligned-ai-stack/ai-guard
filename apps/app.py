@@ -400,6 +400,6 @@ if __name__ == "__main__":
     elif mode == "4":
         temp_defenders = ["basic_chatbot_v0", "basic_chatbot_v1", "cross_exam_v1"]
         for temp_defender in temp_defenders:
-            for convo_length in range(1, 7):
+            for convo_length in [1, 3, 5, 7]:
                 attacker_vs_defender(task_set, attacker, temp_defender, judge,
-                                     limit=100, convo_length=convo_length)
+                                     limit=25, convo_length=convo_length)
