@@ -6,10 +6,14 @@ from core.contracts.schemas import RedTeamSchema
 
 
 
-def run_persuader_v1(task: dict, history: list, agent_state: dict, turns: int, current_turn: int):
+def run_persuader_v1(received_task: dict, history: list, agent_state: dict, turns: int, current_turn: int):
 
     start_time = time.perf_counter()
     client = LLMClient(timeout=120.0)
+
+    task = dict(received_task)
+    if "Goal" not in task:
+        task["Goal"] = task.get("prompt", task.get("Behavior", ""))
 
     task_goal = task['Goal']
     attacker_model = os.getenv("ATTACKER_MODEL", "llama3.1:8b")

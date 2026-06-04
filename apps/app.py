@@ -97,11 +97,14 @@ class BenchmarkRunner:
             behavior_goal=prompt,
             behavior_category=category,
             expected_status=expected_status,
-            status="RUNNING"
+            status="RUNNING",
         )
         self.db.save_trace(trace)
 
-        conversation_history = []   # universal, it states which agent said what
+        trace_tokens = 0    #still trace
+        trace_duration = 0.0
+
+        conversation_history = []   # universal history, it states which agent said what
         attacker_state = {}
         defender_state = {}
         turn_index = 0
@@ -130,6 +133,9 @@ class BenchmarkRunner:
                 # the attack prompt is the last attacker turn's output
                 attack_prompt = attacker_turns[-1]["output_content"]
 
+                trace_tokens += sum(t.get("input_tokens", 0) + t.get("output_tokens", 0) for t in attacker_turns)
+                trace_duration += sum(t.get("duration_ms", 0.0) for t in attacker_turns)
+
 
             # --- DEFENDER, always called ---
             defender_history = frame_history(conversation_history, "defender")
@@ -148,6 +154,9 @@ class BenchmarkRunner:
                 turn_index += 1
             # the final defender output is the last turn's content
             defender_output = defender_turns[-1]["output_content"] or ""
+
+            trace_tokens += sum(t.get("input_tokens", 0) + t.get("output_tokens", 0) for t in attacker_turns)
+            trace_duration += sum(t.get("duration_ms", 0.0) for t in attacker_turns)
 
 
             # --- UPDATE CANONICAL HISTORY ---
@@ -171,12 +180,17 @@ class BenchmarkRunner:
                     trace.final_verdict = "unsafe"
                     print(f"Verdict on Turn {turn_num + 1}: unsafe (Jailbreak Successful)")
 
+                    trace_tokens += sum(t.get("input_tokens", 0) + t.get("output_tokens", 0) for t in attacker_turns)
+                    trace_duration += sum(t.get("duration_ms", 0.0) for t in attacker_turns)
+
 
         # --- FINALIZE TRACE ---
         if trace.final_verdict != "unsafe":
             trace.final_verdict = "safe"
         trace.turns_used = convo_length
         trace.status = "SUCCESS"
+        trace.total_tokens = trace_tokens
+        trace.total_duration_ms = trace_duration
 
         self.db.save_trace(trace)
         self.traces.append(trace)
@@ -229,6 +243,12 @@ class BenchmarkRunner:
             if (self.run.precision + self.run.recall) > 0 else 0
         )
         self.run.accuracy = (tp + tn) / total if total > 0 else 0
+
+        self.run.total_tokens = sum(t.total_tokens for t in self.traces)
+        self.run.total_duration_ms = sum(t.total_duration_ms for t in self.traces)
+        if total > 0:
+            self.run.avg_tokens_per_trace = self.run.total_tokens / total
+            self.run.avg_duration_ms_per_trace = self.run.total_duration_ms / total
 
         self.db.save_run(self.run)
         print(f"\nBenchmark Complete.")
@@ -357,9 +377,9 @@ if __name__ == "__main__":
     attacker = "persuader_v3"
     judge = "judge_v2"
 
-    test_set = "bench/test_sets/test_set_1.json"
-    task_set = "bench/test_sets/task_set_1.json"
-    jbb_set = "bench/test_sets/jbb_harmful.json"
+    test_set = "bench/test_sets/test_set_1.json"    # for benchmarking defender, not so relevant for now
+    task_set =  "bench/test_sets/jbb_harmful.json"  # "bench/test_sets/task_set_1.json"    for defender vs attacker
+    jbb_set = "bench/test_sets/jbb_harmful.json"    # for jailbreakbench
 
     mode = input(
         "Input number:\n"
@@ -376,20 +396,10 @@ if __name__ == "__main__":
                                limit=1, convo_length=1)
     elif mode == "3":
         attacker_vs_defender(task_set, attacker, defender, judge,
-                             limit=1, convo_length=5)
+                             limit=1, convo_length=1)
     elif mode == "4":
-        temp_defender = "basic_chatbot_v0"
-        attacker_vs_defender(task_set, attacker, temp_defender, judge,
-                             limit=5, convo_length=1)
-        attacker_vs_defender(task_set, attacker, temp_defender, judge,
-                             limit=5, convo_length=5)
-        temp_defender = "basic_chatbot_v1"
-        attacker_vs_defender(task_set, attacker, temp_defender, judge,
-                             limit=5, convo_length=1)
-        attacker_vs_defender(task_set, attacker, temp_defender, judge,
-                             limit=5, convo_length=5)
-        temp_defender = "cross_exam_v1"
-        attacker_vs_defender(task_set, attacker, temp_defender, judge,
-                             limit=5, convo_length=1)
-        attacker_vs_defender(task_set, attacker, temp_defender, judge,
-                             limit=5, convo_length=5)
+        temp_defenders = ["basic_chatbot_v0", "basic_chatbot_v1", "cross_exam_v1"]
+        for temp_defender in temp_defenders:
+            for convo_length in range(1, 7):
+                attacker_vs_defender(task_set, attacker, temp_defender, judge,
+                                     limit=100, convo_length=convo_length)
