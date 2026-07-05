@@ -10,6 +10,7 @@ __pycache__/
 
 # databases
 benchmark.db
+conversations_*
 
 # Distribution / packaging
 .Python

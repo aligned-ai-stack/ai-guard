@@ -27,8 +27,8 @@ query = """
     FROM traces t
     JOIN runs r ON t.run_id = r.run_id
     WHERE t.expected_status = 'unsafe'
-      AND r.timestamp >= '2026-06-04T00:00:00'
-      AND r.timestamp < '2026-06-05T00:00:00'
+      AND r.timestamp >= '2026-06-04T19:00:00'
+      AND r.timestamp < '2026-06-05T10:00:00'
       AND t.status = 'SUCCESS'
       AND t.turns_used > 0
       AND r.attacker_module IS NOT NULL
