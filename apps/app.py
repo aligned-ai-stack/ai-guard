@@ -1,6 +1,10 @@
 from pathlib import Path
 import sys
 
+from bench.attackers.fitd import run_fitd
+
+from modules.defenders.intent_tracker_v1 import run_intent_tracker
+
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
@@ -30,6 +34,7 @@ defender_registry = {
     "basic_chatbot_v0": run_basic_chatbot_v0,  # basic
     "basic_chatbot_v1": run_basic_chatbot_v1,  # with system prompt
     "cross_exam_v1": run_cross_exam,        # p->a->p chained topology
+    "intent_tracker_v1": run_intent_tracker,    # stateful intent prediction
 
 }
 
@@ -37,6 +42,7 @@ attacker_registry = {
     "persuader_v1": run_persuader_v1,   # basic with system prompt
     "persuader_v2": run_persuader_v2,    # b->m chained topology
     "persuader_v3": run_persuader_v3,    # e->b->m chained topology
+    "fitd": run_fitd,                       # foot-in-the-door, de-escalates on refusal
 }
 
 judge_registry = {
@@ -138,7 +144,9 @@ class BenchmarkRunner:
 
 
             # --- DEFENDER, always called ---
-            defender_history = frame_history(conversation_history, "defender")
+            max_history_pairs = 4
+            recent_history = conversation_history[-(max_history_pairs * 2):]
+            defender_history = frame_history(recent_history, "defender")
 
             defender_turns, defender_state = self.defender_fn(
                 attack_prompt, defender_history, defender_state
@@ -374,7 +382,7 @@ def attacker_vs_defender(task_set_path: str, attacker_type: str, defender_type: 
 if __name__ == "__main__":
 
     defender = "cross_exam_v1"
-    attacker = "persuader_v3"
+    attacker = "fitd"
     judge = "judge_v2"
 
     test_set = "bench/test_sets/test_set_1.json"    # for benchmarking defender, not so relevant for now
@@ -398,8 +406,6 @@ if __name__ == "__main__":
         attacker_vs_defender(task_set, attacker, defender, judge,
                              limit=1, convo_length=1)
     elif mode == "4":
-        temp_defenders = ["basic_chatbot_v0", "basic_chatbot_v1", "cross_exam_v1"]
-        for temp_defender in temp_defenders:
-            for convo_length in [1, 3, 5, 7]:
-                attacker_vs_defender(task_set, attacker, temp_defender, judge,
-                                     limit=25, convo_length=convo_length)
+        defenders = ["basic_chatbot_v1", "cross_exam_v1", "intent_tracker_v1"]
+        for defender in defenders:
+            attacker_vs_defender(task_set, attacker, defender, judge, limit=5, convo_length=5)

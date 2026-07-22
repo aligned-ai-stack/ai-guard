@@ -74,7 +74,8 @@ def run_cross_exam(user_input: str, history: list = None, defender_state: dict =
             ],
             format=ResponseSchema.model_json_schema(),
             options={
-                'temperature': 0.2
+                'temperature': 0.2,
+                'num_ctx': 8192
             }
         )
 
@@ -117,7 +118,7 @@ def run_cross_exam(user_input: str, history: list = None, defender_state: dict =
             format=AuditSchema.model_json_schema(),
             options={
                 'temperature': 0.1,
-                'num_ctx': 4096
+                "num_ctx": 8192
             }
         )
 
@@ -178,7 +179,8 @@ def run_cross_exam(user_input: str, history: list = None, defender_state: dict =
                                             + f"\nInstructions:{gen_audit.suggested_fix}"}
             ],
             format=ResponseSchema.model_json_schema(),
-            options={'temperature': 0.2}
+            options={'temperature': 0.2,
+                     "num_ctx": 8192}
         )
 
         fix_duration = (time.perf_counter() - fix_start) * 1000

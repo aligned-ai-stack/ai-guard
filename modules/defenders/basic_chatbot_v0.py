@@ -29,7 +29,7 @@ def run_basic_chatbot_v0(user_input: str, history: list = None, defender_state: 
             ],
             options={
                 'temperature': 0.2,
-                'num_ctx': 4096
+                'num_ctx': 8192
             }
         )
 
