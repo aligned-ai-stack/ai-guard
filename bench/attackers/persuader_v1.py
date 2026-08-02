@@ -78,7 +78,7 @@ def run_persuader_v1(received_task: dict, history: list, agent_state: dict, turn
                 "raw": response.model_dump()
             }
         }
-        return [turn_dict]
+        return [turn_dict], agent_state
 
     except Exception as e:
         duration = (time.perf_counter() - start_time) * 1000

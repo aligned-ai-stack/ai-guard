@@ -20,9 +20,9 @@ export LLM_BACKEND=ollama
 export VLLM_BASE_URL=http://localhost:8000/v1
 export VLLM_API_KEY=EMPTY
 
-export DEFENDER_MODEL=dolphin-llama3:8b
-export ATTACKER_MODEL=dolphin-llama3:8b
-export JUDGE_MODEL=dolphin-llama3:8b
+export DEFENDER_MODEL=hf.co/Qwen/Qwen3-8B-GGUF:Q8_0
+export ATTACKER_MODEL=hf.co/Qwen/Qwen3-8B-GGUF:Q8_0
+export JUDGE_MODEL=hf.co/Qwen/Qwen3-8B-GGUF:Q8_0
 
 ollama run dolphin-llama3:8b
 

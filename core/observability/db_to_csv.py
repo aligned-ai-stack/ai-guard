@@ -24,11 +24,11 @@ import csv
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent.parent / "bench" / "benchmark.db"
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "bench" / "cluster_benchmark.db"
 
 # defaults; override via argv
-DATE_START = "2026-06-04"
-DATE_END = "2026-07-15"
+DATE_START = "2026-07-21"
+DATE_END = "2026-07-24"
 
 # include leading trace_id / exchange columns? set False for pure 3-col output
 INCLUDE_METADATA = True

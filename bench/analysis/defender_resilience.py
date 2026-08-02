@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent / "benchmark.db"
+DB_PATH = Path(__file__).resolve().parent.parent / "cluster_benchmark.db"
 
 DATE_START = None
 DATE_END = None
@@ -27,8 +27,8 @@ query = """
     FROM traces t
     JOIN runs r ON t.run_id = r.run_id
     WHERE t.expected_status = 'unsafe'
-      AND r.timestamp >= '2026-06-04T19:00:00'
-      AND r.timestamp < '2026-06-05T10:00:00'
+      AND r.timestamp >= '2026-07-21T00:00:00'
+      AND r.timestamp < '2026-07-24T00:00:00'
       AND t.status = 'SUCCESS'
       AND t.turns_used > 0
       AND r.attacker_module IS NOT NULL

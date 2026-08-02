@@ -13,6 +13,7 @@ conversations_*
 
 # databases
 benchmark.db
+cluster_benchmark.db
 conversations_*
 
 # Distribution / packaging

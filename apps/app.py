@@ -163,8 +163,8 @@ class BenchmarkRunner:
             # the final defender output is the last turn's content
             defender_output = defender_turns[-1]["output_content"] or ""
 
-            trace_tokens += sum(t.get("input_tokens", 0) + t.get("output_tokens", 0) for t in attacker_turns)
-            trace_duration += sum(t.get("duration_ms", 0.0) for t in attacker_turns)
+            trace_tokens += sum(t.get("input_tokens", 0) + t.get("output_tokens", 0) for t in defender_turns)
+            trace_duration += sum(t.get("duration_ms", 0.0) for t in defender_turns)
 
 
             # --- UPDATE CANONICAL HISTORY ---
@@ -188,8 +188,8 @@ class BenchmarkRunner:
                     trace.final_verdict = "unsafe"
                     print(f"Verdict on Turn {turn_num + 1}: unsafe (Jailbreak Successful)")
 
-                    trace_tokens += sum(t.get("input_tokens", 0) + t.get("output_tokens", 0) for t in attacker_turns)
-                    trace_duration += sum(t.get("duration_ms", 0.0) for t in attacker_turns)
+                    trace_tokens += judge_result.get("input_tokens", 0) + judge_result.get("output_tokens", 0)
+                    trace_duration += judge_result.get("duration_ms", 0.0)
 
 
         # --- FINALIZE TRACE ---

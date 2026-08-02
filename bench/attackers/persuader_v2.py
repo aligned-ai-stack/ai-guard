@@ -119,10 +119,20 @@ def run_persuader_v2(received_task: dict, history: list, agent_state: dict, turn
 
         last_exchange = ""
         if history:
-            last = history[-1]
+            # history is framed: attacker=assistant, defender=user
+            # find last pair
+            last_defender = ""
+            last_attacker = ""
+            for msg in reversed(history):
+                if msg["role"] == "user" and not last_defender:
+                    last_defender = msg["content"]
+                elif msg["role"] == "assistant" and not last_attacker:
+                    last_attacker = msg["content"]
+                if last_defender and last_attacker:
+                    break
             last_exchange = (
-                f"Your last message: \"{last['attacker_said']}\"\n"
-                f"The defender replied: \"{last['defender_replied']}\""
+                f"Your last message: \"{last_attacker}\"\n"
+                f"The defender replied: \"{last_defender}\""
             )
 
         muscle_system = f"""
